@@ -1,0 +1,26 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /tmp
+            rm -rf deploy-test-website
+            git clone https://github.com/syedmuhammadmoin/deploy-test-website.git
+            sudo rm -rf /var/www/html/*
+            sudo cp -r /tmp/deploy-test-website/* /var/www/html/
+            sudo chown -R www-data:www-data /var/www/html/
