@@ -18,9 +18,17 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            # Update frontend
             cd /tmp
             rm -rf deploy-test-website
             git clone https://github.com/syedmuhammadmoin/deploy-test-website.git
             sudo rm -rf /var/www/html/*
             sudo cp -r /tmp/deploy-test-website/* /var/www/html/
             sudo chown -R www-data:www-data /var/www/html/
+
+            # Update backend
+            cd /tmp/deploy-test-website/backend
+            cp -r ./* /home/ubuntu/app/backend/
+            cd /home/ubuntu/app/backend
+            npm install
+            pm2 restart portfolio-api
